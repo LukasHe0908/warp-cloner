@@ -1,16 +1,23 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const config = {
-  BASE_KEYS: [],
-  THREADS_COUNT: 1,
-  PROXY_FILE: null,
-  DEVICE_MODELS: [],
-  DELAY: 25,
-  OUTPUT_FILE: 'output.txt',
-  OUTPUT_FORMAT: '{key} | {referral_count}',
-  RETRY_COUNT: 3,
-  ...process.env,
-};
+function config() {
+  let config = {
+    BASE_KEYS: [],
+    THREADS_COUNT: 1,
+    PROXY_FILE: null,
+    DEVICE_MODELS: [],
+    DELAY: 25,
+    OUTPUT_FILE: 'output.txt',
+    OUTPUT_FORMAT: '{key} | {referral_count}',
+    RETRY_COUNT: 3,
+    ...process.env,
+  };
+  if (process.env.BASE_KEYS) {
+    config.BASE_KEYS = process.env.BASE_KEYS.split(',');
+  }
 
-export default config;
+  return config;
+}
+
+export default config();
