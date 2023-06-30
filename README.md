@@ -6,4 +6,5 @@ With this script you will be able to clone many 12-24 PB keys.
 
 ## Special Thanks
 
-- Build From https://github.com/totoroterror/warp-cloner
+- Build From [totoroterror/warp-cloner](https://github.com/totoroterror/warp-cloner)
+- [badafans/warp-reg](https://github.com/badafans/warp-reg)

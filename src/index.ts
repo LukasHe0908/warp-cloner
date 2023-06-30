@@ -33,15 +33,37 @@ async function worker(id: number) {
   console.debug(`Worker ${id} started`);
 
   const key = await customCloneKey(keyDispatcher.getKey());
+  // console.log(key);
 
   if (key !== null) {
-    const output = config.OUTPUT_FORMAT.replace('{key}', key.license).replace(
-      '{referral_count}',
-      key.referral_count
-    );
+    const output = config.OUTPUT_FORMAT.replace(/\\n/g, '\n')
+      // .replace(/{reg_path}/g, key._regInfo.path)
+      // .replace(/{reg_id}/g, key._regInfo.regId)
+      .replace(/{reg_token}/g, key._regInfo.token)
+      .replace(/{id}/g, key.id)
+      // .replace(/{type}/g, key.type)
+      // .replace(/{name}/g, key.name)
+      // .replace(/{warp_enabled}/g, key.warp_enabled)
+      // .replace(/{waitlist_enabled}/g, key.waitlist_enabled)
+      // .replace(/{created}/g, key.created)
+      // .replace(/{updated}/g, key.updated)
+      // .replace(/{place}/g, key.place)
+      // .replace(/{locale}/g, key.locale)
+      // .replace(/{enabled}/g, key.enabled)
+      // .replace(/{install_id}/g, key.install_id)
+      // .replace(/{account.id}/g, key.account.id)
+      // .replace(/{account.account_type}/g, key.account.account_type)
+      // .replace(/{account.created}/g, key.account.created)
+      // .replace(/{account.updated}/g, key.account.updated)
+      // .replace(/{account.premium_data}/g, key.account.premium_data)
+      // .replace(/{account.quota}/g, key.account.quota)
+      // .replace(/{account.warp_plus}/g, key.account.warp_plus)
+      .replace(/{account.referral_count}/g, key.account.referral_count)
+      // .replace(/{account.referral_renewal_countdown}/g, key.account.referral_renewal_countdown)
+      // .replace(/{account.role}/g, key.child)
+      .replace(/{account.license}/g, key.account.license);
 
     console.log(output);
-
     fs.appendFileSync(config.OUTPUT_FILE, output + '\n');
   }
   setTimeout(() => {

@@ -10,6 +10,7 @@
     "@types/node": "^20.2.6"
   },
   "scripts": {
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "tool": "node dist/tool/index.js"
   }
 }

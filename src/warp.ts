@@ -69,8 +69,8 @@ export async function deleteAccount(path: string, regId: any, token: any) {
   }
 }
 
-export async function getAccount(path: string, regId: any, token: any) {
-  const url = `${BASE_URL}/${path}/reg/${regId}/account`;
+export async function getInfo(path: string, regId: any, token: any) {
+  const url = `${BASE_URL}/${path}/reg/${regId}`;
   const response = await fetch(url, {
     headers: {
       ...HEADERS,
@@ -87,12 +87,16 @@ export async function getAccount(path: string, regId: any, token: any) {
 
   const json = await response.json();
 
-  return json;
+  return { ...json, _regInfo: { path, regId, token } };
 }
 
-export async function cloneKey(key: any, deviceModel: any) {
+export async function cloneKey(
+  key: any,
+  deviceModel: any = null,
+  customBody: any = null
+) {
   const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
-  const registerBody = {};
+  const registerBody = { ...customBody };
 
   if (deviceModel) {
     registerBody['type'] = 'Android';
@@ -114,14 +118,14 @@ export async function cloneKey(key: any, deviceModel: any) {
     registerData.account.license
   );
 
-  const information = await getAccount(
+  const information = await getInfo(
     path,
     registerData.id,
     registerData.token
   );
 
   if (!deviceModel) {
-    await deleteAccount(path, registerData.id, registerData.token);
+    // await deleteAccount(path, registerData.id, registerData.token);
   }
 
   return information;
