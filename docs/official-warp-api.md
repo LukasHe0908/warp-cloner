@@ -3,7 +3,6 @@ device_id = '8d78dd66-9ef2-4705-a116-e172dec5044f'
 license_key = 'B98M74fX-97g18hyO-13xwg2T6'
 private_key = 'KFjsohQz1/I0FuoeKgy8v6PFDeXMGej7m+bf8ZsBJn4='
 
-
 //注册
 key = wireguard 公钥
 install_id = 22位字符串
@@ -18,10 +17,13 @@ Connection: Keep-Alive
 Accept-Encoding: gzip
 User-Agent: okhttp/3.12.1
 
+```json
 {"key":"JUrMi7sQM2O42sb0i8TW+XAMXARAIikWCNIyHV4Suws=","install_id":"diF0aHXdTY2paujd3NbtLx","fcm_token":"diF0aHXdTY2paujd3NbtLx:APA91bEv8VREoAe7WK951PiK0-h7ZoZz9aTmaz3O_z8vS5zPrOC29OdHabNNLLIHE7uRoHhqcXy3lePyCZq5ysahblEOC8NpQWqMbPzCjQRoNZs6FVcrRNbX70hZQSnIv4H4cHD5Cvtn","tos":"2023-04-24T16:04:42.013Z","model":"Unknown Android SDK built for x86","serial_number":"diF0aHXdTY2paujd3NbtLx","locale":"zh_CN"}
+```
 
 返回内容
 
+```json
 {
 	"id": "f50d73af-39e3-4aca-820f-c750a52a82ca",
 	"type": "a",
@@ -75,7 +77,7 @@ User-Agent: okhttp/3.12.1
 	"fcm_token": "diF0aHXdTY2paujd3NbtLx:APA91bEv8VREoAe7WK951PiK0-h7ZoZz9aTmaz3O_z8vS5zPrOC29OdHabNNLLIHE7uRoHhqcXy3lePyCZq5ysahblEOC8NpQWqMbPzCjQRoNZs6FVcrRNbX70hZQSnIv4H4cHD5Cvtn",
 	"serial_number": "diF0aHXdTY2paujd3NbtLx"
 }
-
+```
 
 //获取设备信息
 GET /v0a2158/reg/f50d73af-39e3-4aca-820f-c750a52a82ca HTTP/1.1
@@ -88,6 +90,7 @@ Authorization: Bearer 159ce275-d53a-4fb0-aaa9-159232366f54
 
 返回内容
 
+```json
 {
 	"id": "f50d73af-39e3-4aca-820f-c750a52a82ca",
 	"type": "a",
@@ -140,7 +143,7 @@ Authorization: Bearer 159ce275-d53a-4fb0-aaa9-159232366f54
 	"fcm_token": "diF0aHXdTY2paujd3NbtLx:APA91bEv8VREoAe7WK951PiK0-h7ZoZz9aTmaz3O_z8vS5zPrOC29OdHabNNLLIHE7uRoHhqcXy3lePyCZq5ysahblEOC8NpQWqMbPzCjQRoNZs6FVcrRNbX70hZQSnIv4H4cHD5Cvtn",
 	"serial_number": "diF0aHXdTY2paujd3NbtLx"
 }
-
+```
 
 //获取账户APP信息
 GET /v0a2158/client_config HTTP/1.1
@@ -152,6 +155,8 @@ User-Agent: okhttp/3.12.1
 Authorization: Bearer 159ce275-d53a-4fb0-aaa9-159232366f54
 
 返回内容
+
+```json
 {
 	"premium_data_bytes": 0,
 	"referral_reward_bytes": 1000000000,
@@ -252,16 +257,21 @@ Authorization: Bearer 159ce275-d53a-4fb0-aaa9-159232366f54
 		"visible": false
 	}]
 }
-
+```
 
 //更改账户 PUT
 https://api.cloudflareclient.com/v0a2158/reg/device_id/account
 请求内容
+
+```json
 {
 	"license": "F3M519uB-vM58b69k-41eYb9G2"
 }
+```
 
 返回内容
+
+```json
 {
 	"id": "f45594c6-4405-4d76-9618-3895ca5578a4",
 	"created": "0001-01-01T00:00:00Z",
@@ -273,7 +283,7 @@ https://api.cloudflareclient.com/v0a2158/reg/device_id/account
 	"referral_renewal_countdown": 0,
 	"role": "child"
 }
-
+```
 
 //查看账户绑定设备
 GET /v0a2158/reg/a77d04e7-f6cb-4948-a92a-122285fa9285/account/devices HTTP/1.1
@@ -285,6 +295,8 @@ User-Agent: okhttp/3.12.1
 Authorization: Bearer 5d30ffa2-62ec-4289-8c96-bf50d3c8520e
 
 返回内容
+
+```json
 [{
 	"id": "a77d04e7-f6cb-4948-a92a-122285fa9285",
 	"type": "Android",
@@ -295,8 +307,7 @@ Authorization: Bearer 5d30ffa2-62ec-4289-8c96-bf50d3c8520e
 	"active": true,
 	"role": "parent"
 }]
-
-
+```
 
 //更改设备名
 PATCH /v0a2158/reg/a77d04e7-f6cb-4948-a92a-122285fa9285/account/reg/a77d04e7-f6cb-4948-a92a-122285fa9285 HTTP/1.1
@@ -309,10 +320,13 @@ Accept-Encoding: gzip
 User-Agent: okhttp/3.12.1
 Authorization: Bearer 5d30ffa2-62ec-4289-8c96-bf50d3c8520e
 
+```json
 {"name":"dashabi"}
-
+```
 
 返回内容
+
+```json
 [{
 	"id": "a77d04e7-f6cb-4948-a92a-122285fa9285",
 	"type": "Android",
@@ -323,7 +337,7 @@ Authorization: Bearer 5d30ffa2-62ec-4289-8c96-bf50d3c8520e
 	"active": true,
 	"role": "parent"
 }]
-
+```
 
 //删除绑定设备
 PATCH /v0a2158/reg/a77d04e7-f6cb-4948-a92a-122285fa9285/account/reg/43ca7e92-4d88-4b74-973a-5dc97d7b86ef HTTP/1.1
@@ -336,10 +350,13 @@ Accept-Encoding: gzip
 User-Agent: okhttp/3.12.1
 Authorization: Bearer 5d30ffa2-62ec-4289-8c96-bf50d3c8520e
 
+```json
 {"active":false}
+```
 
 返回内容
 
+```json
 [{
 	"id": "a77d04e7-f6cb-4948-a92a-122285fa9285",
 	"type": "Android",
@@ -374,6 +391,7 @@ Authorization: Bearer 5d30ffa2-62ec-4289-8c96-bf50d3c8520e
 	"active": true,
 	"role": "child"
 }]
+```
 
 //删除账户
 DELETE /v0a2158/reg/a77d04e7-f6cb-4948-a92a-122285fa9285

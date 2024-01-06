@@ -9,7 +9,8 @@ function config() {
     DEVICE_MODELS: [],
     DELAY: 25,
     OUTPUT_FILE: 'output.txt',
-    OUTPUT_FORMAT: 'id       {id}\ntoken    {reg_token}\nlicense  {account.license}\nreferral {account.referral_count}\n---',
+    OUTPUT_FORMAT:
+      'id       {id}\ntoken    {reg_token}\nlicense  {account.license}\nreferral {account.referral_count}\n---',
     RETRY_COUNT: 3,
     ...process.env,
   };

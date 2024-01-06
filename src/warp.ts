@@ -118,11 +118,7 @@ export async function cloneKey(
     registerData.account.license
   );
 
-  const information = await getInfo(
-    path,
-    registerData.id,
-    registerData.token
-  );
+  const information = await getInfo(path, registerData.id, registerData.token);
 
   if (!deviceModel) {
     // await deleteAccount(path, registerData.id, registerData.token);
