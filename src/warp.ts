@@ -1,5 +1,10 @@
+import { WireGuard } from './utils/wireguard';
+
 const BASE_URL = 'https://api.cloudflareclient.com';
 const HEADERS = {
+  Accept: 'application/json',
+  'Accept-Encoding': 'gzip',
+  'Cf-Client-Version': 'a-6.3-1922',
   'User-Agent': 'okhttp/3.12.1',
 };
 
@@ -7,7 +12,7 @@ export async function register(path: string, data = {}) {
   const url = `${BASE_URL}/${path}/reg`;
   const response = await fetch(url, {
     method: 'POST',
-    headers: { ...HEADERS, 'Content-Type': 'application/json; charset=UTF-8' },
+    headers: { ...HEADERS, 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
@@ -40,7 +45,7 @@ export async function addKey(path: string, regId: any, token: any, key: any) {
     method: 'PUT',
     headers: {
       ...HEADERS,
-      'Content-Type': 'application/json; charset=UTF-8',
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
@@ -96,20 +101,33 @@ export async function cloneKey(
   customBody: any = null
 ) {
   const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
-  const registerBody = { ...customBody };
-
+  const private_key = WireGuard.genkey();
+  const registerBody = {
+    fcm_token: '',
+    install_id: '',
+    key: WireGuard.pubkey(private_key),
+    locale: 'en_US',
+    model: 'PC',
+    tos: new Date().toISOString(),
+    type: 'Android',
+    ...customBody,
+  };
   if (deviceModel) {
     registerBody['type'] = 'Android';
-    registerBody['model'] = deviceModel;
+    registerBody['mod2el'] = deviceModel;
   }
-
   const registerData = await register(path, registerBody);
   const referrerBody = {
+    fcm_token: '',
+    install_id: '',
+    key: WireGuard.pubkey(WireGuard.genkey()),
+    locale: 'en_US',
+    model: 'PC',
+    tos: new Date().toISOString(),
+    type: 'Android',
     referrer: registerData.id,
   };
-
-  await register(path, referrerBody);
-
+  // const referrerData =  await register(path, referrerBody);
   await addKey(path, registerData.id, registerData.token, key);
   await addKey(
     path,
@@ -117,12 +135,10 @@ export async function cloneKey(
     registerData.token,
     registerData.account.license
   );
-
   const information = await getInfo(path, registerData.id, registerData.token);
-
   if (!deviceModel) {
-    // await deleteAccount(path, registerData.id, registerData.token);
+    await deleteAccount(path, registerData.id, registerData.token);
+    // await deleteAccount(path, referrerData.id, referrerData.token);
   }
-
-  return information;
+  return { ...information, private_key };
 }

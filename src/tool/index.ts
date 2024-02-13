@@ -1,4 +1,5 @@
 import * as warp from '../warp';
+import { WireGuard } from '../utils/wireguard';
 import config from '../config';
 import readline from 'readline';
 const rl = readline.createInterface({
@@ -10,10 +11,10 @@ const feature_name = [
   '功能选择',
   // menu
   '自定义KeyClone注册POST JSON',
-  '将WARP升为WARP+',
-  '获取KWARP信息',
-  //   '选项 4',
-  //   '选项 5',
+  '注册WARP账号',
+  '获取WARP账号信息',
+  '获得reserved值(config.client_id)',
+  '删除WARP账号',
   //   '选项 6',
   //   '选项 7',
   //   '选项 8',
@@ -29,6 +30,7 @@ const menu_text = {
   input_text: '请输入文本: ',
   parased_data: '解析后的数据: ',
   invalid_data: '无效的数据: ',
+  error: '发生错误: ',
 };
 
 function displayMenu() {
@@ -61,32 +63,26 @@ async function handleInput(option) {
           console.log(menu_text.parased_data, parsedJson);
           rl.question(menu_text.confirm_no, async yn => {
             if (yn.toLocaleUpperCase() == 'Y') {
-              const key =
-                config.BASE_KEYS[
-                  Math.floor(Math.random() * config.BASE_KEYS.length)
-                ];
-              console.log(menu_text.pls_wait);
-              const res = await warp.cloneKey(key, null, parsedJson);
-              console.log(res);
+              try {
+                const key =
+                  config.BASE_KEYS[
+                    Math.floor(Math.random() * config.BASE_KEYS.length)
+                  ];
+                console.log(menu_text.pls_wait);
+
+                const res = await warp.cloneKey(key, null, parsedJson);
+                console.log(res);
+              } catch (error) {
+                console.error(menu_text.error, error.message);
+                console.log(menu_text.return_main);
+              }
             } else {
               console.log(menu_text.return_main);
             }
           });
         } catch (error) {
           console.error(menu_text.invalid_data, error.message);
-          rl.question(menu_text.confirm_no, async text => {
-            if (text.toLocaleLowerCase() === 'y') {
-              const key =
-                config.BASE_KEYS[
-                  Math.floor(Math.random() * config.BASE_KEYS.length)
-                ];
-              console.log(menu_text.pls_wait);
-              const res = await warp.cloneKey(key);
-              console.log(res);
-            } else {
-              console.log(menu_text.return_main);
-            }
-          });
+          console.log(menu_text.return_main);
         }
       });
       break;
@@ -94,32 +90,51 @@ async function handleInput(option) {
       console.clear();
       console.log(`----- ${feature_name[2]} -----`);
 
-      rl.question(menu_text.input_text + '格式[id,token]\n', (text: any) => {
+      rl.question(menu_text.input_text + '格式[key]\n', (text: any) => {
         text = text.split(',');
-        text = { id: text[0], token: text[1] };
+        text = { key: text[0] };
         console.log(menu_text.parased_data, text);
         rl.question(menu_text.confirm_yes, async yn => {
           if (yn.toLocaleLowerCase() !== 'n') {
-            const key =
-              config.BASE_KEYS[
-                Math.floor(Math.random() * config.BASE_KEYS.length)
-              ];
             const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
-            const referrerBody = {
-              referrer: text.id,
+            const private_key = WireGuard.genkey();
+            const registerBody = {
+              fcm_token: '',
+              install_id: '',
+              key: WireGuard.pubkey(private_key),
+              locale: 'en_US',
+              model: 'PC',
+              tos: new Date().toISOString(),
+              type: 'Android',
             };
             console.log(menu_text.pls_wait);
-            const registerData = await warp.getInfo(path, text.id, text.token);
-
-            await warp.register(path, referrerBody);
-
-            await warp.addKey(path, text.id, text.token, key);
+            const registerData = await warp.register(path, registerBody);
+            const referrerBody = {
+              fcm_token: '',
+              install_id: '',
+              key: WireGuard.pubkey(WireGuard.genkey()),
+              locale: 'en_US',
+              model: 'PC',
+              tos: new Date().toISOString(),
+              type: 'Android',
+              referrer: registerData.id,
+            };
+            const referrerData = await warp.register(path, referrerBody);
             await warp.addKey(
               path,
-              text.id,
-              text.token,
+              registerData.id,
+              registerData.token,
+              text.key
+            );
+            await warp.addKey(
+              path,
+              registerData.id,
+              registerData.token,
               registerData.account.license
             );
+            console.log('id', registerData.id);
+            console.log('token', registerData.token);
+            console.log('private_key', private_key);
             console.log(menu_text.return_main);
           } else {
             console.log(menu_text.return_main);
@@ -131,30 +146,92 @@ async function handleInput(option) {
       console.clear();
       console.log(`----- ${feature_name[3]} -----`);
 
+      rl.question(
+        menu_text.input_text + '格式[id,token,*to_string=false]\n',
+        (text: any) => {
+          text = text.split(',');
+          text = { id: text[0], token: text[1], to_string: text[2] };
+          console.log(menu_text.parased_data, text);
+          rl.question(menu_text.confirm_yes, async yn => {
+            if (yn.toLocaleLowerCase() !== 'n') {
+              const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
+              console.log(menu_text.pls_wait);
+              try {
+                const registerData = await warp.getInfo(
+                  path,
+                  text.id,
+                  text.token
+                );
+                if (text.to_string) {
+                  console.log(JSON.stringify(registerData));
+                } else {
+                  console.log(registerData);
+                }
+              } catch (error) {
+                console.error(menu_text.error, error.message);
+              }
+              console.log(menu_text.return_main);
+            } else {
+              console.log(menu_text.return_main);
+            }
+          });
+        }
+      );
+      break;
+    case '4':
+      console.clear();
+      console.log(`----- ${feature_name[4]} -----`);
+
+      rl.question(
+        menu_text.input_text + '格式[config.client_id]\n',
+        (text: any) => {
+          text = text.split(',');
+          text = { client_id: text[0] };
+          console.log(menu_text.parased_data, text);
+          rl.question(menu_text.confirm_yes, async yn => {
+            if (yn.toLocaleLowerCase() !== 'n') {
+              function decodeClientId(clientId: string): number[] {
+                const decodedBuffer: Buffer = Buffer.from(clientId, 'base64');
+                const hexString: string = decodedBuffer.toString('hex');
+                const hexPairs: string[] = hexString.match(/.{1,2}/g) || [];
+                const decimalArray: number[] = hexPairs.map(hex =>
+                  parseInt(hex, 16)
+                );
+                return decimalArray;
+              }
+              const data = decodeClientId(text.client_id);
+              console.log(data);
+              console.log(menu_text.return_main);
+            } else {
+              console.log(menu_text.return_main);
+            }
+          });
+        }
+      );
+      break;
+    case '5':
+      console.clear();
+      console.log(`----- ${feature_name[5]} -----`);
+
       rl.question(menu_text.input_text + '格式[id,token]\n', (text: any) => {
         text = text.split(',');
-        text = { id: text[0], token: text[1] };
+        text = { id: text[0], token: text[1], to_string: text[2] };
         console.log(menu_text.parased_data, text);
         rl.question(menu_text.confirm_yes, async yn => {
           if (yn.toLocaleLowerCase() !== 'n') {
             const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
             console.log(menu_text.pls_wait);
-            const registerData = await warp.getInfo(path, text.id, text.token);
-            console.log(registerData);
+            try {
+              await warp.deleteAccount(path, text.id, text.token);
+            } catch (error) {
+              console.error(menu_text.error, error.message);
+            }
             console.log(menu_text.return_main);
           } else {
             console.log(menu_text.return_main);
           }
         });
       });
-      break;
-    case '4':
-      console.log('你选择了选项4');
-      displayMenu();
-      break;
-    case '5':
-      console.log('你选择了选项5');
-      displayMenu();
       break;
     case '6':
       console.log('你选择了选项6');

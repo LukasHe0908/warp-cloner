@@ -23,6 +23,7 @@ class KeyDispenser {
   }
 
   public getKey() {
+    // console.log(this.keys);
     if (this.keys === null || this.keys.length === 0) {
       throw new Error('No keys available');
     }

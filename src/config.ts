@@ -7,10 +7,10 @@ function config() {
     THREADS_COUNT: 1,
     PROXY_FILE: null,
     DEVICE_MODELS: [],
-    DELAY: 25,
+    DELAY: 5000,
     OUTPUT_FILE: 'output.txt',
     OUTPUT_FORMAT:
-      'id       {id}\ntoken    {reg_token}\nlicense  {account.license}\nreferral {account.referral_count}\n---',
+      'license  {account.license}\nreferral {account.referral_count}\n---',
     RETRY_COUNT: 3,
     ...process.env,
   };
