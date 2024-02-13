@@ -108,33 +108,42 @@ async function handleInput(option) {
               type: 'Android',
             };
             console.log(menu_text.pls_wait);
-            const registerData = await warp.register(path, registerBody);
-            const referrerBody = {
-              fcm_token: '',
-              install_id: '',
-              key: WireGuard.pubkey(WireGuard.genkey()),
-              locale: 'en_US',
-              model: 'PC',
-              tos: new Date().toISOString(),
-              type: 'Android',
-              referrer: registerData.id,
-            };
-            const referrerData = await warp.register(path, referrerBody);
-            await warp.addKey(
-              path,
-              registerData.id,
-              registerData.token,
-              text.key
-            );
-            await warp.addKey(
-              path,
-              registerData.id,
-              registerData.token,
-              registerData.account.license
-            );
-            console.log('id', registerData.id);
-            console.log('token', registerData.token);
-            console.log('private_key', private_key);
+            try {
+              const registerData = await warp.register(path, registerBody);
+              const referrerBody = {
+                fcm_token: '',
+                install_id: '',
+                key: WireGuard.pubkey(WireGuard.genkey()),
+                locale: 'en_US',
+                model: 'PC',
+                tos: new Date().toISOString(),
+                type: 'Android',
+                referrer: registerData.id,
+              };
+              const referrerData = await warp.register(path, referrerBody);
+              await warp.addKey(
+                path,
+                registerData.id,
+                registerData.token,
+                text.key
+              );
+              await warp.addKey(
+                path,
+                registerData.id,
+                registerData.token,
+                registerData.account.license
+              );
+              console.log('client_id:');
+              console.log(registerData.config.client_id);
+              console.log('addresses_v6:');
+              console.log(registerData.config.interface.addresses.v6);
+              console.log('id,token:');
+              console.log(registerData.id + ',' + registerData.token);
+              console.log('private_key:');
+              console.log(private_key);
+            } catch (error) {
+              console.error(menu_text.error, error.message);
+            }
             console.log(menu_text.return_main);
           } else {
             console.log(menu_text.return_main);
