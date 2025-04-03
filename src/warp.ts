@@ -20,12 +20,10 @@ export async function register(path: string, data = {}) {
     let responseText: string;
     switch (response.status) {
       case 403:
-        responseText =
-          'Access denied, proxy or your IP is probably blocked on API';
+        responseText = 'Access denied, proxy or your IP is probably blocked on API';
         break;
       case 429:
-        responseText =
-          'Too Many Requests, too much keys were generated for the last minute from this proxy or your IP';
+        responseText = 'Too Many Requests, too much keys were generated for the last minute from this proxy or your IP';
         break;
       default:
         responseText = await response.text();
@@ -59,6 +57,41 @@ export async function addKey(path: string, regId: any, token: any, key: any) {
   }
 }
 
+export async function getDevices(path: string, regId: any, token: any) {
+  const url = `${BASE_URL}/${path}/reg/${regId}/account/devices`;
+  const response = await fetch(url, {
+    headers: {
+      ...HEADERS,
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+}
+
+export async function changeDeviceName(path: string, regId: any, token: any, device_name?: any) {
+  const url = `${BASE_URL}/${path}/reg/${regId}/account/reg/${regId}`;
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      ...HEADERS,
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: device_name || 'default',
+      active: true,
+    }),
+  });
+
+  console.log(await response.text());
+
+  if (response.status !== 200) {
+    const responseText = await response.text();
+    throw new Error(`Failed to add device: ${response.status} ${responseText}`);
+  }
+}
+
 export async function deleteAccount(path: string, regId: any, token: any) {
   const url = `${BASE_URL}/${path}/reg/${regId}`;
   const response = await fetch(url, {
@@ -85,9 +118,7 @@ export async function getInfo(path: string, regId: any, token: any) {
 
   if (response.status !== 200) {
     const responseText = await response.text();
-    throw new Error(
-      `Failed to get account: ${response.status} ${responseText}`
-    );
+    throw new Error(`Failed to get account: ${response.status} ${responseText}`);
   }
 
   const json = await response.json();
@@ -95,11 +126,7 @@ export async function getInfo(path: string, regId: any, token: any) {
   return { ...json, _regInfo: { path, regId, token } };
 }
 
-export async function cloneKey(
-  key: any,
-  deviceModel: any = null,
-  customBody: any = null
-) {
+export async function cloneKey(key: any, deviceModel: any = null, customBody: any = null) {
   const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
   const private_key = WireGuard.genkey();
   const registerBody = {
@@ -129,12 +156,7 @@ export async function cloneKey(
   };
   // const referrerData =  await register(path, referrerBody);
   await addKey(path, registerData.id, registerData.token, key);
-  await addKey(
-    path,
-    registerData.id,
-    registerData.token,
-    registerData.account.license
-  );
+  await addKey(path, registerData.id, registerData.token, registerData.account.license);
   const information = await getInfo(path, registerData.id, registerData.token);
   if (!deviceModel) {
     await deleteAccount(path, registerData.id, registerData.token);

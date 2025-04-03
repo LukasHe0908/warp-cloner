@@ -16,7 +16,7 @@ const feature_name = [
   '获得reserved值(config.client_id)',
   '删除WARP账号',
   '创建公私钥对',
-  //   '选项 7',
+  '查看账户绑定设备',
   //   '选项 8',
   //   '选项 9',
 ];
@@ -102,6 +102,7 @@ async function handleInput(option) {
         console.log(menu_text.pls_wait);
         try {
           const registerData = await warp.register(path, registerBody);
+          // await warp.changeDeviceName(path, registerData.id, registerData.token);
           console.log('client_id:');
           console.log(registerData.config.client_id);
           console.log('addresses_v6:');
@@ -206,8 +207,33 @@ async function handleInput(option) {
 
       break;
     case '7':
-      console.log('你选择了选项7');
-      displayMenu();
+      console.clear();
+      console.log(`----- ${feature_name[7]} -----`);
+
+      rl.question(menu_text.input_text + '格式[id,token,*to_string=false]\n', (text: any) => {
+        text = text.split(',');
+        text = { id: text[0], token: text[1], to_string: text[2] };
+        console.log(menu_text.parased_data, text);
+        rl.question(menu_text.confirm_yes, async yn => {
+          if (yn.toLocaleLowerCase() !== 'n') {
+            const path = `v0a${Math.floor(Math.random() * 900) + 100}`;
+            console.log(menu_text.pls_wait);
+            try {
+              const registerData = await warp.getDevices(path, text.id, text.token);
+              if (text.to_string) {
+                console.log(JSON.stringify(registerData));
+              } else {
+                console.log(registerData);
+              }
+            } catch (error) {
+              console.error(menu_text.error, error.message);
+            }
+            console.log(menu_text.return_main);
+          } else {
+            console.log(menu_text.return_main);
+          }
+        });
+      });
       break;
     case '8':
       console.log('你选择了选项8');
