@@ -10,7 +10,7 @@ export class WireGuard {
   }
 
   static pubkey(privkey: string): string {
-    const privateKey = Buffer.from(privkey, 'base64');
+    const privateKey: any = Buffer.from(privkey, 'base64');
     const publicKey = tweetnacl.scalarMult.base(privateKey);
     return Buffer.from(publicKey).toString('base64');
   }
